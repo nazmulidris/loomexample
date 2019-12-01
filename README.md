@@ -17,6 +17,28 @@
 
 ## Project Loom JDK version
 
+TODO
+
+# Runtime performance stats
+
+## Normal JVM version
+
+Here are some performance numbers for this simple project on hardware. With a
+new Apple 16" MacBook Pro laptop w/ 64GB RAM and 8 core 5GHz Intel CPU:
+
+1. With about 10_000 client threads, the entire program can run in about 17 sec,
+   and the server may wait a few ms at most to accept a connection.
+2. 100_000 client threads connecting to a simple socket server, the JVM
+   experiences some serious performance issues, w/ threads causing the socket
+   server to wait around for a very long time to be able to accept a new socket
+   connection, max of about 7 seconds 😱, and not a few ms! And the entire
+   program takes about 5 minutes to run 😨. BTW, "Grep Console" is a great
+   plugin to monitor output from the client and server println statements.
+
+## Project Loom JVM version
+
+TODO
+
 # References
 
 - [JetBrains reference .gitignore](https://github.com/github/gitignore/blob/master/Global/JetBrains.gitignore)
