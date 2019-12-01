@@ -31,7 +31,7 @@ new Apple 16" MacBook Pro laptop w/ 64GB RAM and 8 core 5GHz Intel CPU:
 2. 100_000 client threads connecting to a simple socket server, the JVM
    experiences some serious performance issues, w/ threads causing the socket
    server to wait around for a very long time to be able to accept a new socket
-   connection, max of about 20 sec 😱, and not a few ms! The average time for
+   connection, max of about 7 sec 😱, and not a few ms! The average time for
    make a connection in increased to about 3 ms. And the entire program takes
    about 5 minutes to run 😨. BTW, "Grep Console" is a great plugin to monitor
    output from the client and server println statements.
