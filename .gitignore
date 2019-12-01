@@ -1,0 +1,14 @@
+# https://intellij-support.jetbrains.com/hc/en-us/articles/206544839
+# https://github.com/github/gitignore/blob/master/Global/JetBrains.gitignore
+
+# User specific settings.
+.idea/**/workspace.xml
+.idea/**/tasks.xml
+.idea/**/usage.statistics.xml
+.idea/**/dictionaries
+.idea/**/shelf
+
+# Maven related settings.
+.idea/**/*.iml
+.idea/**/modules.xml
+target
