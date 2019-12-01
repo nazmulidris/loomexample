@@ -24,25 +24,54 @@ import java.net.Socket
 
 val PORT = 10_000
 val CLASS_NAME = SocketHandlerThread::class.java.simpleName.blue()
+var connectionCount = 0
+var PRINT_EVERY_COUNT = 1_000
 
 fun main() {
+  println("Running program w/ $THREAD_COUNT threads")
   println("Starting ServerSocket on port: $PORT")
   val server = ServerSocket(PORT)
 
-  var maxTime = 0f
-  var avgTime = 0f
+  var maxWaitTimeToAcceptSec = 0f
+  var totalWaitTimeToAcceptSec = 0f
 
-  while (true) {
-    val timeInterval = measureTime {
+  while (connectionCount != THREAD_COUNT) {
+
+    val waitTimeSec = measureTimeSec {
+      // Blocking code.
       val socket = server.accept()
+      connectionCount++
+
+      // Create a new thread and start it (does not block).
       val socketHandlerThread = SocketHandlerThread(socket)
       socketHandlerThread.start()
     }
-    if (timeInterval > maxTime) {
-      maxTime = timeInterval
-      println("🚨 maxTime now: $maxTime sec")
+
+    when {
+      connectionCount > 1 -> {
+        totalWaitTimeToAcceptSec += waitTimeSec
+        when {
+          waitTimeSec > maxWaitTimeToAcceptSec ->
+            maxWaitTimeToAcceptSec = waitTimeSec
+        }
+      }
     }
+
+    printlnThrottled("🚨 maxTime now: $maxWaitTimeToAcceptSec sec")
+    printlnThrottled("⌛️ avgTime now: ${1_000f * totalWaitTimeToAcceptSec / (connectionCount - 1)} ms")
+
   }
+
+  Thread.sleep(1000)
+  println("Program exiting ... ")
+  println("🚨 maxTime now: $maxWaitTimeToAcceptSec sec")
+  println("⌛️ avgTime now: ${1_000f * totalWaitTimeToAcceptSec / (connectionCount - 1)} ms")
+
+}
+
+fun printlnThrottled(msg: String) {
+  if (connectionCount == 1) println(msg)
+  else if (connectionCount % PRINT_EVERY_COUNT == 0) println(msg)
 }
 
 /**
@@ -51,15 +80,15 @@ fun main() {
 class SocketHandlerThread(var clientSocket: Socket) : Thread() {
   override fun run() {
     val CURRENT_THREAD_NAME = currentThread().name.red()
-    println("$CURRENT_THREAD_NAME")
-    println("  🚀 Starting $CLASS_NAME")
+    printlnThrottled("$CURRENT_THREAD_NAME")
+    printlnThrottled("  🚀 Starting $CLASS_NAME")
     clientSocket.use { socket ->
       PrintWriter(socket.getOutputStream(), true).use { writer ->
         writer.println("[echo] Hello World")
-        println("  ⚙️ Writing data to socket (to client)")
+        printlnThrottled("  ⚙️ Writing data to socket (to client)")
       }
     }
-    println("  🏁 Ending $CLASS_NAME")
+    printlnThrottled("  🏁 Ending $CLASS_NAME")
   }
 
 }

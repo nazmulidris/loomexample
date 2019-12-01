@@ -23,30 +23,30 @@ import java.net.Socket
 const val THREAD_COUNT = 100_000
 
 fun main() {
-  measureTime {
+  val elapsedTimeSec = measureTimeSec {
     (1..THREAD_COUNT).forEach {
       val thread = Thread { doWork() }
       thread.start()
       thread.join()
     }
   }
+  println("⏰ Total Elapsed time: ${elapsedTimeSec / 60f} min")
 }
 
 fun doWork() {
-  measureTime {
+  val elapsedTimeSec = measureTimeSec {
     val socket = Socket("localhost", PORT)
     val inputStream = socket.getInputStream()
-    val reader = BufferedReader(InputStreamReader(inputStream));
+    val reader = BufferedReader(InputStreamReader(inputStream))
     val line = reader.readLine()
     println("Thread ${Thread.currentThread().name} - got: $line")
   }
+  println("⏰ Elapsed time: $elapsedTimeSec sec")
 }
 
-fun measureTime(block: () -> Unit): Float {
+fun measureTimeSec(block: () -> Unit): Float {
   val startTime = System.currentTimeMillis()
   block()
   val endTime = System.currentTimeMillis()
-  val elapsedTime = (endTime - startTime) / 1_000f
-  println("⏰ Elapsed time: $elapsedTime sec")
-  return elapsedTime
+  return (endTime - startTime) / 1_000f
 }
