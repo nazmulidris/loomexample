@@ -25,7 +25,7 @@ const val THREAD_COUNT = 100_000
 fun main() {
   val elapsedTimeSec = measureTimeSec {
     (1..THREAD_COUNT).forEach {
-      val thread = Thread { doWork() }
+      val thread = Thread { doWork(it) }
       thread.start()
       thread.join()
     }
@@ -33,15 +33,15 @@ fun main() {
   println("⏰ Total Elapsed time: ${elapsedTimeSec / 60f} min")
 }
 
-fun doWork() {
+fun doWork(count: Int) {
   val elapsedTimeSec = measureTimeSec {
     val socket = Socket("localhost", PORT)
     val inputStream = socket.getInputStream()
     val reader = BufferedReader(InputStreamReader(inputStream))
     val line = reader.readLine()
-    println("Thread ${Thread.currentThread().name} - got: $line")
+    log(count, "Thread ${Thread.currentThread().name} - got: $line")
   }
-  println("⏰ Elapsed time: $elapsedTimeSec sec")
+  log(count, "⏰ Elapsed time: $elapsedTimeSec sec")
 }
 
 fun measureTimeSec(block: () -> Unit): Float {
@@ -49,4 +49,8 @@ fun measureTimeSec(block: () -> Unit): Float {
   block()
   val endTime = System.currentTimeMillis()
   return (endTime - startTime) / 1_000f
+}
+
+fun log(id: Int, msg: String) {
+  if (id == 1 || id % 1000 == 0) println(msg)
 }
